@@ -1,7 +1,7 @@
 # c4.py
-# Connect-4 implementation
+# Connect-4 implementation (python3)
 # Date created: 20 Oct 2017
-#  Last edited: 26 Oct 2017
+#  Last edited: 05 Jul 2018
 
 from random import randint as ri
 
@@ -14,13 +14,13 @@ computer_piece = '#'
 open_space = '_'
 pieces = human_piece + computer_piece
 
-for nrow in xrange(board_height):
-	board.append([open_space for i in xrange(board_width)])
+for nrow in range(board_height):
+	board.append([open_space for i in range(board_width)])
 
 def display(b):
 	print(' 0 1 2 3 4 5 6')
 	print('+%s+'%('-'*13))
-	for i in xrange(len(board)):
+	for i in range(len(board)):
 		print('|%s|'%('|'.join(board[i])))
 	print('+%s+'%('-'*13))
 	print(' 0 1 2 3 4 5 6')
@@ -36,13 +36,13 @@ def checkForWinner():
 		lines.add(e)
 
 	# columns
-	for c in xrange(board_width):
-		# lines.append(''.join([board[r][c] for r in xrange(board_height)]))
-		lines.add(''.join([board[r][c] for r in xrange(board_height)]))
+	for c in range(board_width):
+		# lines.append(''.join([board[r][c] for r in range(board_height)]))
+		lines.add(''.join([board[r][c] for r in range(board_height)]))
 
 	# diagonals NE
-	for c in xrange(board_width):
-		for r in xrange(board_height):
+	for c in range(board_width):
+		for r in range(board_height):
 			s_NE = ''
 			i,j = 0,0
 			while c+i<board_width and r+j>=0:
@@ -98,7 +98,7 @@ def chooseNextMove(mode='random'):
 			c += 1
 		return c
 	elif mode == 'random':
-		open_cols = [i for i in xrange(board_width) if testMove(i)]
+		open_cols = [i for i in range(board_width) if testMove(i)]
 		return open_cols[ri(0,len(open_cols)-1)]
 	elif mode == 'lookAhead1':
 		pass
@@ -113,7 +113,7 @@ while status == 'Ongoing':
 	piece = pieces[player_index]
 	print('%s\'s turn (%s)'%(players[player_index],piece))
 	if piece == human_piece:
-		c = int(raw_input('Column (0-6)\n>> '))
+		c = int(input('Column (0-6)\n>> '))
 		isValidMove = move(c,piece)
 		while not isValidMove:
 			print('Move invalid.')
