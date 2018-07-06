@@ -4,12 +4,14 @@ Connect-4 implementation (python3)
 
 Developed at: https://github.com/wrhm/c4
   Date begun: 20 Oct 2017
- Last edited: 05 Jul 2018
+ Last edited: 06 Jul 2018
 
 To-do:
+* I added this line just for you, IanQS :)
 * flake8
 * Allow compatibility with both python2 and python3?
 * pick casing styles for functions and variables, likeThis or like_this
+* make a board module?
 * Allow parameters in Board.__init__: dictionary?
 * Abstract AI into separate class
 * Allow choice of AI behavior
@@ -21,6 +23,7 @@ To-do:
 
 Helpful links:
 * https://docs.python.org/3/tutorial/classes.html
+* https://www.python.org/dev/peps/pep-0008/?#naming-conventions
 '''
 
 from random import randint as ri
