@@ -7,6 +7,7 @@ Date created: 20 Oct 2017
  Last edited: 05 Jul 2018
 
 To-do:
+* flake8
 * Abstract AI into separate class
 * Allow choice of AI behavior
 * Add more AIs
@@ -44,7 +45,7 @@ class Board:
         self.AI_mode = 'random'  # maybe parameterize this
         self.status = 'Ongoing'
         self.players = ['Human', 'Computer']
-        
+
         # who goes first. (0 is human)
         self.player_index = 0  # maybe parameterize this
 
@@ -57,22 +58,22 @@ class Board:
         """ Display the game state to the terminal. """
         header = ' ' + ' '.join([str(i) for i in range(self.board_width)])
         num_dashes = 2 * self.board_width - 1
-        
+
         print(header)
         print('+%s+' % ('-' * num_dashes))
-        
+
         for i in range(len(self.board)):
             print('|%s|' % ('|'.join(self.board[i])))
-        
+
         print('+%s+' % ('-' * num_dashes))
         print(header)
 
     def requestHumanMove(self):
         """ Request a column selection from the user, which is both:
-            * an integer 0 <= c <= [board_width - 1] 
+            * an integer 0 <= c <= [board_width - 1]
             * the index of a non-full column
         """
-        
+
         def isNonemptyNumericStr(s):
             digits = '0123456789'
             if len(s) == 0:
@@ -81,25 +82,24 @@ class Board:
                 if c not in digits:
                     return False
             return True
-        
+
         got_valid_request = False
         while not got_valid_request:
             in_str = input('Column (0-%d)\n>> ' % (self.board_width - 1))
-            while not ( isNonemptyNumericStr(in_str) and
-                                  0 <= int(in_str) and
-                        int(in_str) <= self.board_width - 1):
-                print('Please enter an integer 0 <= c <= %d' % (self.board_width - 1))
+            while not (isNonemptyNumericStr(in_str) and 0 <= int(in_str) and
+                       int(in_str) <= self.board_width - 1):
+                print('Please enter an integer 0 <= c <= %d' %
+                      (self.board_width - 1))
                 in_str = input('Column (0-%d)\n>> ' % (self.board_width - 1))
 
             dprint('Validated column #: %s' % in_str)
 
-            got_valid_request = self.attempt_move(int(in_str), self.human_piece)
+            got_valid_request = self.attempt_move(int(in_str),
+                                                  self.human_piece)
             if got_valid_request:
                 return
             else:
                 print('Column %s is full. Please pick another one.' % in_str)
-
-
 
     def checkForWinner(self):
         """ Check the board for a draw or victory/loss.
@@ -217,12 +217,6 @@ if __name__ == '__main__':
         print('\n%s\'s turn (%s)' % (board.players[board.player_index],
                                      piece))
         if piece == board.human_piece:
-            # c = int(input('Column (0-6)\n>> '))
-            # isValidMove = board.attempt_move(c, piece)
-            # while not isValidMove:
-            #     print('Move invalid.')
-            #     c = int(input('Column (0-6)\n>> '))
-            #     isValidMove = board.attempt_move(c, piece)
             board.requestHumanMove()
         else:
             # AI chooses move
