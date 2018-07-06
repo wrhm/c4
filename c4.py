@@ -3,15 +3,18 @@
 Connect-4 implementation (python3)
 
 Developed at: https://github.com/wrhm/c4
-Date created: 20 Oct 2017
+  Date begun: 20 Oct 2017
  Last edited: 05 Jul 2018
 
 To-do:
 * flake8
+* Allow compatibility with both python2 and python3?
+* pick casing styles for functions and variables, likeThis or like_this
+* Allow parameters in Board.__init__: dictionary?
 * Abstract AI into separate class
 * Allow choice of AI behavior
 * Add more AIs
-* pick casing styles for functions and variables, likeThis or like_this
+* DONE: sort Board functions by dependency
 * DONE: Make Board.display handle more arbitrary number of columns
 * DONE: Input validation
 * DONE: Create a board class
@@ -54,6 +57,9 @@ class Board:
             self.board.append([self.open_space for i in
                                range(self.board_width)])
 
+    def switchPlayer(self):
+        self.player_index = 1 - self.player_index
+
     def display(self):
         """ Display the game state to the terminal. """
         header = ' ' + ' '.join([str(i) for i in range(self.board_width)])
@@ -68,10 +74,32 @@ class Board:
         print('+%s+' % ('-' * num_dashes))
         print(header)
 
+    def column_has_vacancy(self, column):
+        """ If board has an opening in <column>, return (True,r), where r
+        is the row where a new piece in that column would fall.
+
+        Otherwise, return (False,-1)
+        """
+        r = self.board_height - 1
+        while r >= 0:
+            if self.board[r][column] == self.open_space:
+                return (True, r)
+            r -= 1
+        return (False, -1)
+
+    def attempt_move(self, column, piece):
+        ''' Make a move for <piece> in <column>, if possible.
+        Return True iff it was possible.
+        '''
+        (success, r) = self.column_has_vacancy(column)
+        if success:
+            self.board[r][column] = piece
+        return success
+
     def requestHumanMove(self):
         """ Request a column selection from the user, which is both:
-            * an integer 0 <= c <= [board_width - 1]
-            * the index of a non-full column
+            - an integer 0 <= c <= [board_width - 1]
+            - the index of a non-full column
         """
 
         def isNonemptyNumericStr(s):
@@ -103,12 +131,11 @@ class Board:
 
     def checkForWinner(self):
         """ Check the board for a draw or victory/loss.
-
-        - draw imaginary lines across all rows/columns/diagonals
-        - if any of these lines has 4 non-empty cells in a row, it is a
-          win for that player
-        - otherwise, if no such line exists, but the board is full: Draw
-        - otherwise, the game is still ongoing
+            - draw imaginary lines across all rows/columns/diagonals
+            - if any of these lines has 4 non-empty cells in a row, it is a
+              win for that player
+            - otherwise, if no such line exists, but the board is full: Draw
+            - otherwise, the game is still ongoing
         """
 
         human_str = self.human_piece * 4
@@ -129,7 +156,7 @@ class Board:
                                 r in range(self.board_height)])
             lines.add(this_col)
 
-        # diagonals NE
+        # diagonals - NE and SE
         for c in range(self.board_width):
             for r in range(self.board_height):
                 s_NE = ''
@@ -164,28 +191,6 @@ class Board:
 
         # Game hasn't ended yet
         return 'Ongoing'
-
-    def column_has_vacancy(self, column):
-        """ If board has an opening in <column>, return (True,r), where r
-        is the row where a new piece in that column would fall.
-
-        Otherwise, return (False,-1)
-        """
-        r = self.board_height - 1
-        while r >= 0:
-            if self.board[r][column] == self.open_space:
-                return (True, r)
-            r -= 1
-        return (False, -1)
-
-    def attempt_move(self, column, piece):
-        ''' Make a move for <piece> in <column>, if possible.
-        Return True iff it was possible.
-        '''
-        (success, r) = self.column_has_vacancy(column)
-        if success:
-            self.board[r][column] = piece
-        return success
 
     def chooseNextMove(self, mode='random'):
         '''Proof-of-concept: choose left-most available column
@@ -227,7 +232,6 @@ if __name__ == '__main__':
         board.status = board.checkForWinner()
         dprint('status: %s' % board.status)
 
-        # implement as "board.switch_player"
-        board.player_index = 1 - board.player_index
+        board.switchPlayer()
 
     print('Winner: %s' % board.status)
