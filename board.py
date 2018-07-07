@@ -3,12 +3,12 @@
 Module for a Connect-4 board representation
 
 Developed at: https://github.com/wrhm/c4
-  Date begun: 20 Oct 2017
+  Date begun: 05 Jul 2018
  Last edited: 07 Jul 2018
 
 To-do:
 * flake8
-* pick casing styles for functions and variables, likeThis or like_this
+* functions and variables: style like_this, not likeThis
 * Allow parameters in Board.__init__: dictionary?
 
 Helpful links:
@@ -16,6 +16,7 @@ Helpful links:
 '''
 
 from random import randint as ri
+
 
 class Board:
     """A representation of a Connect-4 board"""
@@ -41,7 +42,7 @@ class Board:
             self.board.append([self.open_space for i in
                                range(self.board_width)])
 
-    def switchPlayer(self):
+    def switch_player(self):
         self.player_index = 1 - self.player_index
 
     def display(self):
@@ -80,13 +81,13 @@ class Board:
             self.board[r][column] = piece
         return success
 
-    def requestHumanMove(self):
+    def request_human_move(self):
         """ Request a column selection from the user, which is both:
             - an integer 0 <= c <= [board_width - 1]
             - the index of a non-full column
         """
 
-        def isNonemptyNumericStr(s):
+        def is_nonempty_numeric_str(s):
             digits = '0123456789'
             if len(s) == 0:
                 return False
@@ -98,7 +99,7 @@ class Board:
         got_valid_request = False
         while not got_valid_request:
             in_str = input('Column (0-%d)\n>> ' % (self.board_width - 1))
-            while not (isNonemptyNumericStr(in_str) and 0 <= int(in_str) and
+            while not (is_nonempty_numeric_str(in_str) and 0 <= int(in_str) and
                        int(in_str) <= self.board_width - 1):
                 print('Please enter an integer 0 <= c <= %d' %
                       (self.board_width - 1))
@@ -113,7 +114,7 @@ class Board:
             else:
                 print('Column %s is full. Please pick another one.' % in_str)
 
-    def checkForWinner(self):
+    def check_for_winner(self):
         """ Check the board for a draw or victory/loss.
             - draw imaginary lines across all rows/columns/diagonals
             - if any of these lines has 4 non-empty cells in a row, it is a
@@ -176,10 +177,10 @@ class Board:
         # Game hasn't ended yet
         return 'Ongoing'
 
-    def chooseNextMove(self, mode='random'):
+    def choose_next_move(self, mode='random'):
         '''Proof-of-concept: choose left-most available column
 
-        lookAhead1: if find winning move, take it. otherwise random
+        look_ahead_1: if find winning move, take it. otherwise random
         '''
         if mode == 'lefty':
             c = 0
@@ -190,5 +191,5 @@ class Board:
             open_cols = [i for i in range(self.board_width) if
                          self.column_has_vacancy(i)[0]]
             return open_cols[ri(0, len(open_cols) - 1)]
-        elif mode == 'lookAhead1':
+        elif mode == 'look_ahead_1':
             pass

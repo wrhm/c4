@@ -9,7 +9,7 @@ Developed at: https://github.com/wrhm/c4
 To-do:
 * flake8
 * Allow compatibility with both python2 and python3?
-* pick casing styles for functions and variables, likeThis or like_this
+* functions and variables: style like_this, not likeThis
 * Allow parameters in Board.__init__: dictionary?
 * Abstract AI into separate class
 * Allow choice of AI behavior
@@ -18,9 +18,6 @@ To-do:
 * DONE: Make Board.display handle more arbitrary number of columns
 * DONE: Input validation
 * DONE: Create a board class
-
-Helpful links:
-* https://docs.python.org/3/tutorial/classes.html
 '''
 
 from board import Board
@@ -45,16 +42,16 @@ if __name__ == '__main__':
         print('\n%s\'s turn (%s)' % (board.players[board.player_index],
                                      piece))
         if piece == board.human_piece:
-            board.requestHumanMove()
+            board.request_human_move()
         else:
             # AI chooses move
-            c = board.chooseNextMove(board.AI_mode)
+            c = board.choose_next_move(board.AI_mode)
             board.attempt_move(c, piece)
 
         board.display()
-        board.status = board.checkForWinner()
+        board.status = board.check_for_winner()
         dprint('status: %s' % board.status)
 
-        board.switchPlayer()
+        board.switch_player()
 
     print('Winner: %s' % board.status)
