@@ -34,7 +34,7 @@ class Board:
         self.computer_piece = 'O'
         self.open_space = '_'
         self.pieces = self.human_piece + self.computer_piece
-        self.AI_type = 'lefty'
+        self.AI_type = 'random'
 
         self.AI = Opponent(self.AI_type)
 
