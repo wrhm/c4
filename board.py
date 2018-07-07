@@ -10,7 +10,9 @@ To-do:
 * flake8
 * functions and variables: style like_this, not likeThis
 * Allow parameters in Board.__init__: dictionary?
-* Abstract AI into separate class
+** size, AI choice, first player
+* Optimize win-checking: only check neighborhood of new piece
+* DONE: Abstract AI into separate class
 
 Helpful links:
 * https://docs.python.org/3/tutorial/classes.html
@@ -32,8 +34,9 @@ class Board:
         self.computer_piece = 'O'
         self.open_space = '_'
         self.pieces = self.human_piece + self.computer_piece
+        self.AI_type = 'lefty'
 
-        self.AI = Opponent()
+        self.AI = Opponent(self.AI_type)
 
         self.status = 'Ongoing'
         self.players = ['Human', 'Computer']
@@ -78,16 +81,23 @@ class Board:
             r -= 1
         return (False, -1)
 
-    # # Move this into opponent class
-    # def attempt_move(self, column, piece):
-    #     """ Make a move for <piece> in <column>, if possible.
-    #     Return True iff it was possible.
-    #     """
+    def attempt_move(self, column, piece):
+        """ Make a move for <piece> in <column>, if possible.
+        Return True iff it was possible.
+        """
 
-    #     (success, r) = self.column_has_vacancy(column)
-    #     if success:
-    #         self.board[r][column] = piece
-    #     return success
+        (success, r) = self.column_has_vacancy(column)
+        if success:
+            self.board[r][column] = piece
+        return success
+
+    def get_nonFull_columns(self):
+        """ Return an ordered list of indices of columns which have at least
+            one vacancy.
+        """
+
+        return [c for c in range(self.board_width) if
+                self.column_has_vacancy(c)[0]]
 
     def request_human_move(self):
         """ Request a column selection from the user, which is both:
@@ -107,14 +117,15 @@ class Board:
         got_valid_request = False
         while not got_valid_request:
             in_str = input('Column (0-%d)\n>> ' % (self.board_width - 1))
+
             while not (is_nonempty_numeric_str(in_str) and 0 <= int(in_str) and
                        int(in_str) <= self.board_width - 1):
                 print('Please enter an integer 0 <= c <= %d' %
                       (self.board_width - 1))
                 in_str = input('Column (0-%d)\n>> ' % (self.board_width - 1))
 
-            got_valid_request = self.AI.attempt_move(self, int(in_str),
-                                                     self.human_piece)
+            got_valid_request = self.attempt_move(int(in_str),
+                                                  self.human_piece)
             if got_valid_request:
                 return
             else:
@@ -166,38 +177,18 @@ class Board:
                 lines.add(s_NE)
                 lines.add(s_SE)
 
+        # Check for a winner
         for e in lines:
             if human_str in e:
-                # Human wins
                 return 'Human'
-
             if computer_str in e:
-                # Computer wins
                 return 'Computer'
 
-        # Assuming the previous state was not a win, full means draw
-        if (''.join([''.join(row) for
-                    row in self.board])).count(self.open_space) == 0:
+        # If the board is full and has no winner, it's a draw
+        # all_cells = (''.join([''.join(row) for row in self.board]))
+        # if all_cells.count(self.open_space) == 0:
+        if len(self.get_nonFull_columns()) == 0:
             return 'Draw'
 
         # Game hasn't ended yet
         return 'Ongoing'
-
-    # # Move this into opponent class
-    # def choose_next_move(self, mode='random'):
-    #     """Proof-of-concept: choose left-most available column
-
-    #     look_ahead_1: if find winning move, take it. otherwise random
-    #     """
-
-    #     if mode == 'lefty':
-    #         c = 0
-    #         while not self.column_has_vacancy(c)[0]:
-    #             c += 1
-    #         return c
-    #     elif mode == 'random':
-    #         open_cols = [i for i in range(self.board_width) if
-    #                      self.column_has_vacancy(i)[0]]
-    #         return open_cols[ri(0, len(open_cols) - 1)]
-    #     elif mode == 'look_ahead_1':
-    #         pass

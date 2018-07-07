@@ -40,7 +40,8 @@ if __name__ == '__main__':
         else:
             # AI chooses move
             c = board.AI.choose_next_move(board)
-            assert board.AI.attempt_move(board, c, piece)
+            # board.AI.attempt_move(board, c, piece)
+            board.attempt_move(c, piece)
 
         board.display()
         board.status = board.check_for_winner()
