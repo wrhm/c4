@@ -1,4 +1,4 @@
-''' board.py
+""" board.py
 
 Module for a Connect-4 board representation
 
@@ -10,19 +10,21 @@ To-do:
 * flake8
 * functions and variables: style like_this, not likeThis
 * Allow parameters in Board.__init__: dictionary?
+* Abstract AI into separate class
 
 Helpful links:
 * https://docs.python.org/3/tutorial/classes.html
-'''
+"""
 
-from random import randint as ri
+from opponent import Opponent
 
 
 class Board:
-    """A representation of a Connect-4 board"""
+    """ A representation of a Connect-4 board """
 
     def __init__(self):
         """ Initialize board-specific variables. """
+
         self.board = []
         self.board_height = 6
         self.board_width = 7  # should not exceed 10, due to self.display
@@ -30,7 +32,9 @@ class Board:
         self.computer_piece = 'O'
         self.open_space = '_'
         self.pieces = self.human_piece + self.computer_piece
-        self.AI_mode = 'random'  # maybe parameterize this
+
+        self.AI = Opponent()
+
         self.status = 'Ongoing'
         self.players = ['Human', 'Computer']
 
@@ -47,6 +51,7 @@ class Board:
 
     def display(self):
         """ Display the game state to the terminal. """
+
         header = ' ' + ' '.join([str(i) for i in range(self.board_width)])
         num_dashes = 2 * self.board_width - 1
 
@@ -65,6 +70,7 @@ class Board:
 
         Otherwise, return (False,-1)
         """
+
         r = self.board_height - 1
         while r >= 0:
             if self.board[r][column] == self.open_space:
@@ -72,14 +78,16 @@ class Board:
             r -= 1
         return (False, -1)
 
-    def attempt_move(self, column, piece):
-        ''' Make a move for <piece> in <column>, if possible.
-        Return True iff it was possible.
-        '''
-        (success, r) = self.column_has_vacancy(column)
-        if success:
-            self.board[r][column] = piece
-        return success
+    # # Move this into opponent class
+    # def attempt_move(self, column, piece):
+    #     """ Make a move for <piece> in <column>, if possible.
+    #     Return True iff it was possible.
+    #     """
+
+    #     (success, r) = self.column_has_vacancy(column)
+    #     if success:
+    #         self.board[r][column] = piece
+    #     return success
 
     def request_human_move(self):
         """ Request a column selection from the user, which is both:
@@ -105,10 +113,8 @@ class Board:
                       (self.board_width - 1))
                 in_str = input('Column (0-%d)\n>> ' % (self.board_width - 1))
 
-            # dprint('Validated column #: %s' % in_str)
-
-            got_valid_request = self.attempt_move(int(in_str),
-                                                  self.human_piece)
+            got_valid_request = self.AI.attempt_move(self, int(in_str),
+                                                     self.human_piece)
             if got_valid_request:
                 return
             else:
@@ -177,19 +183,21 @@ class Board:
         # Game hasn't ended yet
         return 'Ongoing'
 
-    def choose_next_move(self, mode='random'):
-        '''Proof-of-concept: choose left-most available column
+    # # Move this into opponent class
+    # def choose_next_move(self, mode='random'):
+    #     """Proof-of-concept: choose left-most available column
 
-        look_ahead_1: if find winning move, take it. otherwise random
-        '''
-        if mode == 'lefty':
-            c = 0
-            while not self.column_has_vacancy(c)[0]:
-                c += 1
-            return c
-        elif mode == 'random':
-            open_cols = [i for i in range(self.board_width) if
-                         self.column_has_vacancy(i)[0]]
-            return open_cols[ri(0, len(open_cols) - 1)]
-        elif mode == 'look_ahead_1':
-            pass
+    #     look_ahead_1: if find winning move, take it. otherwise random
+    #     """
+
+    #     if mode == 'lefty':
+    #         c = 0
+    #         while not self.column_has_vacancy(c)[0]:
+    #             c += 1
+    #         return c
+    #     elif mode == 'random':
+    #         open_cols = [i for i in range(self.board_width) if
+    #                      self.column_has_vacancy(i)[0]]
+    #         return open_cols[ri(0, len(open_cols) - 1)]
+    #     elif mode == 'look_ahead_1':
+    #         pass

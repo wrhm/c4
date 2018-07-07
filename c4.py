@@ -1,4 +1,4 @@
-''' c4.py
+""" c4.py
 
 Connect-4 implementation (python3)
 
@@ -11,14 +11,8 @@ To-do:
 * Allow compatibility with both python2 and python3?
 * functions and variables: style like_this, not likeThis
 * Allow parameters in Board.__init__: dictionary?
-* Abstract AI into separate class
 * Allow choice of AI behavior
-* Add more AIs
-* DONE: sort Board functions by dependency
-* DONE: Make Board.display handle more arbitrary number of columns
-* DONE: Input validation
-* DONE: Create a board class
-'''
+"""
 
 from board import Board
 
@@ -45,8 +39,8 @@ if __name__ == '__main__':
             board.request_human_move()
         else:
             # AI chooses move
-            c = board.choose_next_move(board.AI_mode)
-            board.attempt_move(c, piece)
+            c = board.AI.choose_next_move(board)
+            assert board.AI.attempt_move(board, c, piece)
 
         board.display()
         board.status = board.check_for_winner()
