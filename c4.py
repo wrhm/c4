@@ -15,6 +15,7 @@ To-do:
 * Allow choice of AI behavior
 """
 
+from constants import States
 from board import Board
 
 DEBUG = False
@@ -32,7 +33,7 @@ if __name__ == '__main__':
     board.display()
 
     # Main game loop
-    while board.ongoing:
+    while board.state == States.ongoing:
         piece = board.pieces[board.player_index]
         print('\n%s\'s turn (%s)' % (board.players[board.player_index],
                                      piece))
@@ -41,14 +42,16 @@ if __name__ == '__main__':
         else:
             # AI chooses move
             c = board.AI.choose_next_move(board)
-            # board.AI.attempt_move(board, c, piece)
             board.attempt_move(c, piece)
 
         board.display()
-        # board.status = board.check_for_winner()
         board.check_for_winner()
-        # dprint('status: %s' % board.status)
 
         board.switch_player()
 
-    print('Winner: %s' % board.winner)
+    if board.state == States.computer_wins:
+        print('Winner: Computer')
+    elif board.state == States.human_wins:
+        print('Winner: Human')
+    else:
+        print('It\'s a draw!')

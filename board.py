@@ -9,6 +9,7 @@ Developed at: https://github.com/wrhm/c4
 To-do:
 * flake8
 * functions and variables: style like_this, not likeThis
+* remove "board" from names of board variables
 * Allow parameters in Board.__init__: dictionary?
 ** size, AI choice, first player
 * Optimize win-checking: only check neighborhood of new piece
@@ -18,6 +19,8 @@ Helpful links:
 * https://docs.python.org/3/tutorial/classes.html
 """
 
+import constants
+from constants import States
 from opponent import Opponent
 
 
@@ -28,19 +31,20 @@ class Board:
         """ Initialize board-specific variables. """
 
         self.board = []
-        self.board_height = 6
-        self.board_width = 7  # should not exceed 10, due to self.display
-        self.human_piece = '@'
-        self.computer_piece = 'O'
-        self.open_space = '_'
-        self.pieces = self.human_piece + self.computer_piece
-        self.AI_type = 'random'
+        self.board_height = constants.BOARD_HEIGHT
+        self.board_width = constants.BOARD_WIDTH
 
+        self.human_piece = constants.HUMAN_PIECE
+        self.computer_piece = constants.COMPUTER_PIECE
+        self.open_space = constants.OPEN_SPACE
+        self.pieces = constants.PIECES
+
+        # Maybe query the user for desired opponent type
+        self.AI_type = 'random'
         self.AI = Opponent(self.AI_type)
 
-        self.ongoing = True
         self.players = ['Human', 'Computer']
-        self.winner = None
+        self.state = States.ongoing
 
         # who goes first. (0 is human). maybe parameterize this
         self.player_index = 0
@@ -115,18 +119,23 @@ class Board:
                     return False
             return True
 
+        def is_bounded_by(b, a, c):
+            """ Assumes a,b,c are ints """
+            return ((a <= b) and (b <= c))
+
         got_valid_request = False
         while not got_valid_request:
             in_str = input('Column (0-%d)\n>> ' % (self.board_width - 1))
 
-            while not (is_nonempty_numeric_str(in_str) and 0 <= int(in_str) and
-                       int(in_str) <= self.board_width - 1):
+            while not (is_nonempty_numeric_str(in_str) and
+                       is_bounded_by(int(in_str), 0, self.board_width - 1)):
                 print('Please enter an integer 0 <= c <= %d' %
                       (self.board_width - 1))
                 in_str = input('Column (0-%d)\n>> ' % (self.board_width - 1))
 
             got_valid_request = self.attempt_move(int(in_str),
                                                   self.human_piece)
+
             if got_valid_request:
                 return
             else:
@@ -181,21 +190,13 @@ class Board:
         # Check for a winner
         for e in lines:
             if human_str in e:
-                self.winner = 'Human'
-                self.ongoing = False
+                self.state = States.human_wins
                 return
             if computer_str in e:
-                self.winner = 'Computer'
-                self.ongoing = False
+                self.state = States.computer_wins
                 return
 
         # If the board is full and has no winner, it's a draw
-        # all_cells = (''.join([''.join(row) for row in self.board]))
-        # if all_cells.count(self.open_space) == 0:
         if len(self.get_nonFull_columns()) == 0:
-            self.winner = 'Draw'
-            self.ongoing = False
+            self.state = States.draw
             return
-
-        # Game hasn't ended yet
-        # return 'Ongoing'
