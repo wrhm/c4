@@ -32,7 +32,7 @@ if __name__ == '__main__':
     board.display()
 
     # Main game loop
-    while board.status == 'Ongoing':
+    while board.ongoing:
         piece = board.pieces[board.player_index]
         print('\n%s\'s turn (%s)' % (board.players[board.player_index],
                                      piece))
@@ -45,9 +45,10 @@ if __name__ == '__main__':
             board.attempt_move(c, piece)
 
         board.display()
-        board.status = board.check_for_winner()
-        dprint('status: %s' % board.status)
+        # board.status = board.check_for_winner()
+        board.check_for_winner()
+        # dprint('status: %s' % board.status)
 
         board.switch_player()
 
-    print('Winner: %s' % board.status)
+    print('Winner: %s' % board.winner)

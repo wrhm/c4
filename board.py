@@ -38,11 +38,12 @@ class Board:
 
         self.AI = Opponent(self.AI_type)
 
-        self.status = 'Ongoing'
+        self.ongoing = True
         self.players = ['Human', 'Computer']
+        self.winner = None
 
-        # who goes first. (0 is human)
-        self.player_index = 0  # maybe parameterize this
+        # who goes first. (0 is human). maybe parameterize this
+        self.player_index = 0
 
         # Initialize the board as a grid of blank cells
         for nrow in range(self.board_height):
@@ -158,7 +159,7 @@ class Board:
                                 r in range(self.board_height)])
             lines.add(this_col)
 
-        # diagonals - NE and SE
+        # diagonals - northeast and southeast
         for c in range(self.board_width):
             for r in range(self.board_height):
                 s_NE = ''
@@ -180,15 +181,21 @@ class Board:
         # Check for a winner
         for e in lines:
             if human_str in e:
-                return 'Human'
+                self.winner = 'Human'
+                self.ongoing = False
+                return
             if computer_str in e:
-                return 'Computer'
+                self.winner = 'Computer'
+                self.ongoing = False
+                return
 
         # If the board is full and has no winner, it's a draw
         # all_cells = (''.join([''.join(row) for row in self.board]))
         # if all_cells.count(self.open_space) == 0:
         if len(self.get_nonFull_columns()) == 0:
-            return 'Draw'
+            self.winner = 'Draw'
+            self.ongoing = False
+            return
 
         # Game hasn't ended yet
-        return 'Ongoing'
+        # return 'Ongoing'
